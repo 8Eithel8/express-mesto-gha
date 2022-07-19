@@ -10,9 +10,10 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.createCard = (req, res) => {
-    const { name, owner, link, likes, createdAt } = req.body; //достанем  ID
+    const { name, link } = req.body; //достанем  ID
+    const owner = req.user._id;
 
-    Card.create({ title, genre, user: directorId })
+    Card.create({ name, owner, link })
         .then(card => res.send({ data: card }))
         .catch(err => res.status(500).send({ message: err.message }));
 };

@@ -17,6 +17,15 @@ mongoose.connect(
 app.use('/users', require('./routes/users'));
 // app.use('/directors', require('./routes/directors'));
 
+//милдвер для авторизации (временно)
+app.use((req, res, next) => {
+    req.user = {
+        _id: '62d705d4448454182ff028c1'
+    };
+
+    next();
+});
+
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
 })

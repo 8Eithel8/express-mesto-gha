@@ -1,6 +1,6 @@
+// схема карточки:
 const mongoose = require('mongoose');
 const user = require('./user');
-// Опишем схему:
 const cardSchema = new mongoose.Schema({
     name: {
         type: String,
