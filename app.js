@@ -14,8 +14,6 @@ mongoose.connect(
   { useNewUrlParser: true },
 );
 
-// app.use('/directors', require('./routes/directors'));
-
 // милдвер для авторизации (временно)
 app.use((req, res, next) => {
   req.user = {
