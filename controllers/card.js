@@ -6,7 +6,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .populate('owner')
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: err.message }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
 };
 
 // создаем карточку
@@ -19,7 +19,7 @@ module.exports.createCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(NOT_FOUND).send({ message: 'Переданы некорректные данные при создании карточки' });
-      } else res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      } else res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -32,7 +32,7 @@ module.exports.deleteCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -55,7 +55,7 @@ module.exports.likeCard = (req, res) => {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки лайка' });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -78,6 +78,6 @@ module.exports.dislikeCard = (req, res) => {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные для снятия лайка' });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };

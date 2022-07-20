@@ -4,7 +4,7 @@ const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('./errors');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ users }))
-    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: err.message }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUserId = (req, res) => {
@@ -18,7 +18,7 @@ module.exports.getUserId = (req, res) => {
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError' || err.name === 'CastError') {
         res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден' });
-      } else res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      } else res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -31,14 +31,14 @@ module.exports.createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(NOT_FOUND).send({ message: 'Переданы некорректные данные при создании пользователя' });
-      } else res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      } else res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 // обновляем инфо о пользователе
 module.exports.updateUserInfo = (req, res) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail()
     .then(({ avatar, _id }) => res.send({
       name, about, avatar, _id,
@@ -52,7 +52,7 @@ module.exports.updateUserInfo = (req, res) => {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -60,7 +60,7 @@ module.exports.updateUserInfo = (req, res) => {
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail()
     .then(({ name, about, _id }) => res.send({
       name, about, avatar, _id,
@@ -74,6 +74,6 @@ module.exports.updateUserAvatar = (req, res) => {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара' });
         return;
       }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
