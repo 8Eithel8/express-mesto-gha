@@ -44,7 +44,7 @@ module.exports.updateUserInfo = (req, res) => {
       name, about, avatar, _id,
     }))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
+      if (err.name === 'DocumentNotFoundError' || err.name === 'CastError') {
         res.status(NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден.' });
         return;
       }
@@ -66,7 +66,7 @@ module.exports.updateUserAvatar = (req, res) => {
       name, about, avatar, _id,
     }))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
+      if (err.name === 'DocumentNotFoundError' || err.name === 'CastError') {
         res.status(NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден.' });
         return;
       }
