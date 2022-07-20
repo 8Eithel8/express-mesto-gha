@@ -1,6 +1,6 @@
 // схема карточки:
 const mongoose = require('mongoose');
-const user = require('./user');
+// const user = require('./user');
 const cardSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -8,24 +8,24 @@ const cardSchema = new mongoose.Schema({
         minlength: 2,
         maxlength: 30,
     },
-    link : {
+    link: {
         type: String,
         required: true,
     },
-    owner : {
+    owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: user,
+        ref: 'user',
         required: true,
     },
-    likes: {
+    likes: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: user,
+        ref: 'user',
         default: [],
-    },
+    }],
     createdAt: {
         type: Date,
         default: Date.now,
     }
 });
 
-module.exports = mongoose.model('user', cardSchema);
+module.exports = mongoose.model('card', cardSchema);

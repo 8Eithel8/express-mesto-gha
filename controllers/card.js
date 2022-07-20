@@ -2,18 +2,16 @@ const Card = require('../models/card');
 
 //получаем все карточки
 module.exports.getCards = (req, res) => {
-    user.find({})
-        .populate('user')
-
     Card.find({})
+        .populate('owner')
         .then(cards => res.send({ data: cards }))
         .catch(err => res.status(500).send({ message: err.message }));
 };
 
 //создаем карточку
 module.exports.createCard = (req, res) => {
-    const { name, link } = req.body; //достанем  ID
-    const owner = req.user._id;
+    const { name, link } = req.body;
+    const owner = req.user._id; //достанем  ID
 
     Card.create({ name, owner, link })
         .then(card => res.send({ data: card }))

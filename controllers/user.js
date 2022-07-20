@@ -6,7 +6,6 @@ module.exports.getUsers = (req, res) => {
         .catch(err => res.status(500).send({ message: err.message }));
 };
 
-
 module.exports.getUserId = (req, res) => {
     User.findById(req.params._id)
         .then(user => res.send({ data: user }))

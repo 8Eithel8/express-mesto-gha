@@ -14,7 +14,7 @@ mongoose.connect(
     { useNewUrlParser: true }
 );
 
-app.use('/users', require('./routes/users'));
+
 // app.use('/directors', require('./routes/directors'));
 
 //милдвер для авторизации (временно)
@@ -25,6 +25,9 @@ app.use((req, res, next) => {
 
     next();
 });
+
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}`)
