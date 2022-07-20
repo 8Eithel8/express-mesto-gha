@@ -28,10 +28,15 @@ module.exports.deleteCard = (req, res) => {
     .orFail()
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'DocumentNotFoundError' || err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         res.status(NOT_FOUND).send({ message: 'Передан несуществующий _id карточки.' });
         return;
       }
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Передан несуществующий _id карточки.' });
+        return;
+      }
+
       res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
