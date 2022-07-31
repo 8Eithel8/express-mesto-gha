@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { NOT_FOUND } = require('./controllers/errors');
+const { login, createUser } = require('./controllers/user');
 
 const { PORT = 3000 } = process.env;
 
@@ -15,17 +16,11 @@ mongoose.connect(
   { useNewUrlParser: true },
 );
 
-// милдвер для авторизации (временно)
-app.use((req, res, next) => {
-  req.user = {
-    _id: '62d705d4448454182ff028c1',
-  };
-
-  next();
-});
-
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use((req, res) => {
   res.status(NOT_FOUND).send({ message: 'Путь не найден' });
