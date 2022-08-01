@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const { NOT_FOUND } = require('./controllers/errors');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/not-found-error');
 
 const { PORT = 3000 } = process.env;
 
@@ -25,9 +26,11 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use((req, res) => {
-  res.status(NOT_FOUND).send({ message: 'Путь не найден' });
+app.use(() => {
+  throw new NotFoundError('Путь не найден');
 });
+
+app.use(require('./middlewares/errors'));
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
