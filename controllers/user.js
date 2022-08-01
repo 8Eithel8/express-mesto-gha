@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequestError = require('../errors/bad-request-error');
+const ConflictError = require('../errors/conflict-error');
 const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('./errors');
 
 module.exports.getUsers = (req, res, next) => {
@@ -9,29 +12,19 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserId = (req, res) => {
+module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
-    .orFail()
+    .orFail(() => new NotFoundError('Запрашиваемый пользователь не найден.'))
     .then(({
       name, about, avatar, _id,
     }) => res.send({
       name, about, avatar, _id,
     }))
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        res.status(NOT_FOUND).send({ message: 'Запрашиваемый пользователь не найден.' });
-        return;
-      }
-      if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Запрошен некорректный _id.' });
-        return;
-      }
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
-    });
+    .catch(next);
 };
 
 // создаем пользователя
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -44,8 +37,12 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя.' });
-      } else res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка.' });
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
+      } if (err.code === 11000) {
+        next(new ConflictError('Пользователь с таким логином уже зарегистрирован'));
+      } else {
+        next(err);
+      }
     });
 };
 
