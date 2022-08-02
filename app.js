@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-error');
+const { validateUser } = require('./middlewares/validators');
 
 const { PORT = 3000 } = process.env;
 
@@ -18,7 +20,7 @@ mongoose.connect(
 );
 
 app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signup', validateUser, createUser);
 
 app.use(auth);
 
@@ -29,6 +31,7 @@ app.use(() => {
   throw new NotFoundError('Путь не найден');
 });
 
+app.use(errors());
 app.use(require('./middlewares/errors'));
 
 app.listen(PORT, () => {
