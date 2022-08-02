@@ -2,12 +2,13 @@ const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 const InternalSeverError = require('../errors/internal-server-error');
+const ForbiddenError = require('../errors/forbidden-error');
 
 const cardInvalidData = 'Переданы некорректные данные при создании карточки.';
 const cardNonexistentId = 'Передан несуществующий _id карточки.';
 const serverError = 'На сервере произошла ошибка.';
 const cardInvalidLikeData = 'Переданы некорректные данные для постановки лайка';
-
+const forbidden = 'Действие запрещено';
 // получаем все карточки
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -35,7 +36,13 @@ module.exports.createCard = (req, res, next) => {
 module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail()
-    .then((card) => res.send(card))
+    .then((card) => {
+      const me = req.user._id;
+      if (me === card.owner._id) {
+        return res.send(card);
+      }
+      throw new ForbiddenError(forbidden);
+    })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError(cardNonexistentId));
