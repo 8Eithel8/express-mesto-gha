@@ -32,4 +32,13 @@ const validateUserId = celebrate({
   }),
 });
 
-module.exports = { validateUser, validateLogin, validateUserId };
+const validateUserInfo = celebrate({
+  params: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+});
+
+module.exports = {
+  validateUser, validateLogin, validateUserId, validateUserInfo,
+};
