@@ -60,7 +60,7 @@ module.exports.likeCard = (req, res, next) => {
     .then((like) => res.send({ like }))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        next(new BadRequestError(cardNonexistentId));
+        next(new NotFoundError(cardNonexistentId));
       } else
       if (err.name === 'CastError') {
         next(new BadRequestError(cardInvalidLikeData));
@@ -82,7 +82,7 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((dislike) => res.send({ dislike }))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        next(new BadRequestError(cardNonexistentId));
+        next(new NotFoundError(cardNonexistentId));
       } else
       if (err.name === 'CastError') {
         next(new BadRequestError(cardInvalidLikeData));
