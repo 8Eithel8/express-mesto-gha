@@ -39,7 +39,7 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       const me = req.user._id;
       if (me === card.owner._id) {
-        return res.send(card);
+        return res.status(200).send(card);
       }
       throw new ForbiddenError(forbidden);
     })
