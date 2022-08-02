@@ -22,9 +22,9 @@ module.exports.getUsers = (req, res, next) => {
 const getUserById = (id, res, next) => User.findById(id)
   .orFail(() => new NotFoundError(userNotFound))
   .then(({
-    name, about, avatar, _id,
+    name, about, avatar, _id, email,
   }) => res.status(200).send({
-    name, about, avatar, _id,
+    name, about, avatar, _id, email,
   }))
   .catch(next);
 
