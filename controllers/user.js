@@ -19,26 +19,21 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
+const getUserById = (id, res, next) => User.findById(id)
+  .orFail(() => new NotFoundError(userNotFound))
+  .then(({
+    name, about, avatar, _id,
+  }) => res.status(200).send({
+    name, about, avatar, _id,
+  }))
+  .catch(next);
+
 module.exports.getUserMe = (req, res, next) => {
-  User.findById(req.user._id)
-    .orFail(() => new NotFoundError(userNotFound))
-    .then(({
-      name, about, avatar, _id,
-    }) => res.status(200).send({
-      name, about, avatar, _id,
-    }))
-    .catch(next);
+  getUserById(req.user._id, res, next);
 };
 
 module.exports.getUserId = (req, res, next) => {
-  User.findById(req.params.userId)
-    .orFail(() => new NotFoundError(userNotFound))
-    .then(({
-      name, about, avatar, _id,
-    }) => res.status(200).send({
-      name, about, avatar, _id,
-    }))
-    .catch(next);
+  getUserById(req.params.userId, res, next);
 };
 
 // создаем пользователя
