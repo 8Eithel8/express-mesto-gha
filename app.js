@@ -5,7 +5,7 @@ const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-error');
-const { validateUser } = require('./middlewares/validators');
+const { validateUser, validateLogin } = require('./middlewares/validators');
 
 const { PORT = 3000 } = process.env;
 
@@ -19,7 +19,7 @@ mongoose.connect(
   { useNewUrlParser: true },
 );
 
-app.post('/signin', login);
+app.post('/signin', validateLogin, login);
 app.post('/signup', validateUser, createUser);
 
 app.use(auth);
