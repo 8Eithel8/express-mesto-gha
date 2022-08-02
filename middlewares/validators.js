@@ -1,5 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-const { isEmail, isURL } = require('validator');
+const { isURL } = require('validator');
 const BadRequestError = require('../errors/bad-request-error');
 
 const validateUrl = (url) => {
@@ -26,4 +26,10 @@ const validateLogin = celebrate({
   }),
 });
 
-module.exports = { validateUser, validateLogin };
+const validateUserId = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().alphanum().length(24).hex(),
+  }),
+});
+
+module.exports = { validateUser, validateLogin, validateUserId };
