@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
@@ -13,6 +14,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet());
 
 mongoose.connect(
   'mongodb://localhost:27017/mestodb',
