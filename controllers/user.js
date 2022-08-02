@@ -19,8 +19,19 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.getUserMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => new NotFoundError(userNotFound))
+    .then(({
+      name, about, avatar, _id,
+    }) => res.status(200).send({
+      name, about, avatar, _id,
+    }))
+    .catch(next);
+};
+
 module.exports.getUserId = (req, res, next) => {
-  User.findById(req.params.userId || req.user._id)
+  User.findById(req.params.userId)
     .orFail(() => new NotFoundError(userNotFound))
     .then(({
       name, about, avatar, _id,
