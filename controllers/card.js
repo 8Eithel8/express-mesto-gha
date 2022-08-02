@@ -3,31 +3,43 @@ const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 const ConflictError = require('../errors/conflict-error');
 const UnauthorizedError = require('../errors/unauthorized-error');
+const InternalSeverError = require('../errors/internal-server-error');
 const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('./errors');
 
+const cardInvalidData = 'Переданы некорректные данные при создании карточки.';
+const cardNonexistentId = 'Передан несуществующий _id карточки.';
+const serverError = 'На сервере произошла ошибка.';
+const cardInvalidLikeData = 'Переданы некорректные данные для постановки лайка';
+
 // получаем все карточки
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate('owner')
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
+    .catch(() => next(new InternalSeverError(serverError)));
 };
 
 // создаем карточку
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id; // достанем  ID
 
   Card.create({ name, owner, link })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки' });
-      } else res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+      if (err.name === 'ValidationError' && err.link === 'ValidationError') {
+        next(new BadRequestError(cardInvalidData));
+      } else {
+        next(err);
+      }
+      // if (err.name === 'ValidationError') {
+      // res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные при
+      // создании карточки' });
+      // } else res.status(INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail()
     .then((card) => res.send(card))
@@ -46,7 +58,7 @@ module.exports.deleteCard = (req, res) => {
 };
 
 // ставим лайки
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     // добавляем _id в массив, если его там нет
@@ -69,7 +81,7 @@ module.exports.likeCard = (req, res) => {
 };
 
 // удалаяем лайк
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     // убираем _id из массива
