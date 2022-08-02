@@ -39,6 +39,13 @@ const validateUserInfo = celebrate({
   }),
 });
 
+const validateUserAvatar = celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().custom(validateUrl),
+
+  }),
+});
+
 module.exports = {
-  validateUser, validateLogin, validateUserId, validateUserInfo,
+  validateUser, validateLogin, validateUserId, validateUserInfo, validateUserAvatar,
 };
