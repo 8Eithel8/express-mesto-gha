@@ -8,6 +8,7 @@ const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-error');
 const { validateUser, validateLogin } = require('./middlewares/validators');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -30,6 +31,8 @@ mongoose.connect(
   { useNewUrlParser: true },
 );
 
+app.use(requestLogger); // подключаем логгер ошибок
+
 app.post('/signin', validateLogin, login);
 app.post('/signup', validateUser, createUser);
 
@@ -41,6 +44,8 @@ app.use('/cards', require('./routes/cards'));
 app.use(() => {
   throw new NotFoundError('Путь не найден');
 });
+
+app.use(errorLogger); // подключаем логгер ошибок
 
 app.use(errors());
 app.use(require('./middlewares/errors'));
